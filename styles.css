@@ -925,6 +925,46 @@ button { font-family: inherit; }
 }
 .modex-video[data-loaded="true"] { opacity: 1; }
 
+/* Tactile glove — flat PNG with scroll-driven 3D rotation */
+.modex-glove {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  max-width: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1200px;
+}
+.modex-glove-img {
+  display: block;
+  width: auto;
+  height: 100%;
+  max-height: 420px;
+  max-width: 100%;
+  object-fit: contain;
+  will-change: transform;
+  transform-style: preserve-3d;
+  transform:
+    rotateY(var(--glove-rotY, 0deg))
+    rotateX(var(--glove-rotX, 0deg))
+    scale(var(--glove-scale, 1));
+}
+.modex-glove-shadow {
+  position: absolute;
+  bottom: 6%;
+  left: 50%;
+  width: 65%;
+  height: 60px;
+  pointer-events: none;
+  transform: translateX(-50%) scaleX(var(--glove-scale, 1));
+  background: radial-gradient(ellipse at center,
+    rgba(74,29,150,0.22) 0%,
+    rgba(74,29,150,0.06) 45%,
+    transparent 75%);
+  filter: blur(10px);
+}
+
 .modex-rec circle {
   animation: blink 1.4s infinite;
   transform-box: fill-box;
