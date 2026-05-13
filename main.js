@@ -310,8 +310,8 @@
   ];
 
   const FONTS = [
-    { name: 'Space Grotesk', stack: '"Space Grotesk", "Inter", system-ui, sans-serif' },
-    { name: 'Inter',         stack: '"Inter", system-ui, sans-serif' },
+    { name: 'Manrope',           stack: '"Manrope", "Plus Jakarta Sans", system-ui, sans-serif' },
+    { name: 'Plus Jakarta Sans', stack: '"Plus Jakarta Sans", system-ui, sans-serif' },
   ];
 
   const applyAccent = (name) => {
@@ -332,7 +332,7 @@
 
   // initial paint from defaults
   applyAccent(TWEAKS.darkSectionTone || 'Deep Purple');
-  applyFont(TWEAKS.displayFont || 'Space Grotesk');
+  applyFont(TWEAKS.displayFont || 'Manrope');
 
   // Build panel
   const panel = document.createElement('div');
@@ -375,7 +375,7 @@
   FONTS.forEach(f => {
     const btn = document.createElement('button');
     btn.textContent = f.name;
-    btn.setAttribute('aria-pressed', String(f.name === (TWEAKS.displayFont || 'Space Grotesk')));
+    btn.setAttribute('aria-pressed', String(f.name === (TWEAKS.displayFont || 'Manrope')));
     btn.addEventListener('click', () => {
       applyFont(f.name);
       fontEl.querySelectorAll('button').forEach(s => s.setAttribute('aria-pressed', 'false'));
