@@ -311,6 +311,8 @@ button { font-family: inherit; }
 .hero-intro {
   padding: clamp(80px, 14vw, 160px) var(--pad-x) clamp(60px, 10vw, 120px);
   background: linear-gradient(180deg, #FFFFFF 0%, var(--bg-tint) 100%);
+  border-top: 1px solid rgba(74, 29, 150, 0.12);
+  border-bottom: 1px solid rgba(74, 29, 150, 0.12);
 }
 .hero-intro-inner {
   max-width: 760px;
