@@ -876,9 +876,6 @@ button { font-family: inherit; }
 .modex-stage {
   position: relative;
   min-height: 460px;
-  border-radius: 22px;
-  background: rgba(74, 29, 150, 0.03);
-  border: 1px solid rgba(74, 29, 150, 0.09);
   overflow: hidden;
 }
 
@@ -915,6 +912,18 @@ button { font-family: inherit; }
   height: 100%;
   max-width: 500px;
 }
+
+.modex-video {
+  width: 100%;
+  height: 100%;
+  max-width: 500px;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 12px;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+.modex-video[data-loaded="true"] { opacity: 1; }
 
 .modex-rec circle {
   animation: blink 1.4s infinite;
