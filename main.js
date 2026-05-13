@@ -144,6 +144,61 @@
     requestAnimationFrame(() => requestAnimationFrame(update));
   });
 
+  /* ---------- Modalities explorer (split-panel interactive) ---------- */
+  const modex = document.querySelector('.modex');
+  if (modex) {
+    const items = Array.from(modex.querySelectorAll('.modex-item'));
+    const visuals = Array.from(modex.querySelectorAll('.modex-visual'));
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let activeIndex = 0;
+    let inView = false;
+
+    const setActive = (idx) => {
+      activeIndex = idx;
+      items.forEach((it, i) => {
+        const active = i === idx;
+        it.classList.toggle('is-active', active);
+        it.classList.remove('is-running');
+        it.setAttribute('aria-selected', String(active));
+      });
+      visuals.forEach((v, i) => v.classList.toggle('is-active', i === idx));
+      if (inView && !reducedMotion) {
+        void items[idx].offsetWidth; // reflow to restart the bar animation
+        items[idx].classList.add('is-running');
+      }
+    };
+
+    items.forEach((item, idx) => {
+      const fill = item.querySelector('.modex-bar-fill');
+      if (fill) {
+        fill.addEventListener('animationend', () => {
+          if (idx === activeIndex && inView && !reducedMotion) {
+            setActive((activeIndex + 1) % items.length);
+          }
+        });
+      }
+      const activate = () => { if (idx !== activeIndex) setActive(idx); else if (inView && !reducedMotion) { item.classList.remove('is-running'); void item.offsetWidth; item.classList.add('is-running'); } };
+      item.addEventListener('mouseenter', activate);
+      item.addEventListener('click', activate);
+      item.addEventListener('focus', activate);
+      item.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activate(); }
+      });
+    });
+
+    const modexIO = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        inView = e.isIntersecting;
+        if (inView) {
+          setActive(activeIndex);
+        } else {
+          items.forEach(i => i.classList.remove('is-running'));
+        }
+      });
+    }, { threshold: 0.2 });
+    modexIO.observe(modex);
+  }
+
   /* ---------- Video hydration with graceful fallback ----------
      We use data-src + a HEAD probe so missing files don't spam the
      console with resource errors in environments without the videos.
