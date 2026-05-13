@@ -962,6 +962,7 @@ button { font-family: inherit; }
   max-height: 420px;
   max-width: 100%;
   object-fit: contain;
+  border-radius: 16px;
 }
 .modex-glove-shadow {
   position: absolute;
