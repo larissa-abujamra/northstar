@@ -334,6 +334,15 @@ button { font-family: inherit; }
 }
 /* override the .reveal up-fade for scatter (it manages opacity itself) */
 .scatter-text.reveal { opacity: 1; transform: none; transition: none; }
+
+/* Word-by-word scroll opacity reveal */
+.word-reveal { text-wrap: balance; }
+.word-reveal .word {
+  display: inline-block;
+  position: relative;
+  opacity: var(--op, 0.12);
+  will-change: opacity;
+}
 .hero-intro-cta {
   display: flex;
   flex-wrap: wrap;

@@ -144,6 +144,76 @@
     requestAnimationFrame(() => requestAnimationFrame(update));
   });
 
+  /* ---------- Word-by-word opacity reveal on scroll ----------
+     Each word is wrapped in its own inline-block span. As the element
+     passes through the viewport, words light up from 0.12 → 1 opacity
+     sequentially, with overlapping slices so it reads as a smooth wave. */
+  document.querySelectorAll('.word-reveal').forEach(node => {
+    // Walk child nodes to preserve inline elements like <br/>
+    const parts = [];
+    Array.from(node.childNodes).forEach(child => {
+      if (child.nodeType === Node.TEXT_NODE) {
+        const words = child.textContent.split(/\s+/).filter(Boolean);
+        words.forEach(w => parts.push({ kind: 'word', text: w }));
+      } else if (child.nodeType === Node.ELEMENT_NODE) {
+        parts.push({ kind: 'el', node: child.cloneNode(true) });
+      }
+    });
+
+    node.textContent = '';
+    const wordSpans = [];
+    parts.forEach(p => {
+      if (p.kind === 'word') {
+        const span = document.createElement('span');
+        span.className = 'word';
+        span.textContent = p.text;
+        node.appendChild(span);
+        node.appendChild(document.createTextNode(' '));
+        wordSpans.push(span);
+      } else {
+        node.appendChild(p.node);
+      }
+    });
+
+    const n = wordSpans.length;
+    if (!n) return;
+    // Each word owns a slice of total progress; slice width > stride for overlap
+    const stride = 1 / n;
+    const sliceWidth = stride * 2.5;
+    const MIN_OP = 0.12;
+
+    const update = () => {
+      const rect = node.getBoundingClientRect();
+      const vh = window.innerHeight || document.documentElement.clientHeight || 0;
+      // Range mirrors the Framer offset ["start 0.85", "center center"]:
+      // progress 0 when element top hits 85% of viewport,
+      // progress 1 when element center hits viewport center.
+      const startTop = vh * 0.85;
+      const endTop   = (vh / 2) - (rect.height / 2);
+      const denom    = startTop - endTop;
+      if (!vh || denom <= 0 || !isFinite(denom)) return;
+      const raw = (startTop - rect.top) / denom;
+      const progress = Math.max(0, Math.min(1, raw));
+
+      for (let i = 0; i < n; i++) {
+        const wStart = i * stride;
+        const t = Math.max(0, Math.min(1, (progress - wStart) / sliceWidth));
+        const op = MIN_OP + (1 - MIN_OP) * t;
+        wordSpans[i].style.setProperty('--op', op.toFixed(3));
+      }
+    };
+
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => { update(); ticking = false; });
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    requestAnimationFrame(() => requestAnimationFrame(update));
+  });
+
   /* ---------- Modalities explorer (split-panel interactive) ---------- */
   const modex = document.querySelector('.modex');
   if (modex) {
