@@ -227,7 +227,7 @@ button { font-family: inherit; }
 .hero-veil {
   position: absolute; inset: 0;
   background:
-    linear-gradient(180deg, rgba(111, 111, 227, 0.429) 0%, rgba(250,250,251,0.25) 30%, rgba(250,250,251,0.6) 100%);
+    linear-gradient(180deg, rgba(111, 111, 227, 0.268) 0%, rgba(250,250,251,0.25) 30%, rgba(250,250,251,0.6) 100%);
 }
 
 .hero-hud {
@@ -560,6 +560,32 @@ button { font-family: inherit; }
 .section-dark  {
   background: var(--accent-deep);
   color: #ECE9F7;
+}
+
+/* #field video backdrop — translucent footage over the accent-deep base */
+#field { overflow: hidden; isolation: isolate; }
+#field .section-inner { position: relative; z-index: 1; }
+.field-media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.field-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+.field-video[data-loaded="true"] { opacity: 0.45; }
+.field-veil {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(14, 11, 51, 0.35) 0%, rgba(14, 11, 51, 0.55) 100%);
 }
 .section-deep {
   background: linear-gradient(135deg, var(--accent-2) 0%, var(--accent-deep) 60%, #1d0f4f 100%);

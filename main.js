@@ -460,17 +460,26 @@
     v.addEventListener('canplay', ok);
     v.addEventListener('error', () => { v.style.display = 'none'; });
 
-    fetch(src, { method: 'HEAD' })
-      .then(r => {
-        if (!r || !r.ok) { v.style.display = 'none'; return; }
-        v.src = src;
-        v.load();
-      })
-      .catch(() => { v.style.display = 'none'; });
+    const loadDirect = () => { v.src = src; v.load(); };
 
-    setTimeout(() => {
-      if (v.readyState < 2) v.style.display = 'none';
-    }, 4000);
+    // file:// and some sandboxed contexts reject fetch() — skip the HEAD
+    // probe there and let the <video> element try directly. A fetch error
+    // (network hiccup, CORS quirk) also shouldn't kill the video, so we
+    // fall through on .catch instead of hiding. Real 404s still hide.
+    if (location.protocol === 'file:') {
+      loadDirect();
+    } else {
+      fetch(src, { method: 'HEAD' })
+        .then(r => {
+          if (r && r.ok) loadDirect();
+          else v.style.display = 'none';
+        })
+        .catch(loadDirect);
+    }
+
+    // Hide only if no loadeddata/canplay ever fired (timeout extended
+    // from 4s to 10s — 23MB videos can need more than 4s on first load).
+    setTimeout(() => { if (!loaded) v.style.display = 'none'; }, 10000);
   });
 
   /* ---------- TWEAKS panel (vanilla, host-protocol compliant) ---------- */
