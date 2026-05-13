@@ -227,7 +227,7 @@ button { font-family: inherit; }
 .hero-veil {
   position: absolute; inset: 0;
   background:
-    linear-gradient(180deg, rgba(250,250,251,0.5) 0%, rgba(250,250,251,0.25) 30%, rgba(250,250,251,0.6) 100%);
+    linear-gradient(180deg, rgba(111, 111, 227, 0.429) 0%, rgba(250,250,251,0.25) 30%, rgba(250,250,251,0.6) 100%);
 }
 
 .hero-hud {
@@ -283,6 +283,29 @@ button { font-family: inherit; }
   background-clip: text;
   color: transparent;
 }
+/* Sparkle particles under "intelligence." — injected by main.js */
+.hero-em-wrap {
+  position: relative;
+  display: inline-block;
+}
+.hero-sparkles {
+  position: absolute;
+  left: -20%;
+  right: -20%;
+  top: 100%;
+  height: 110px;
+  pointer-events: none;
+  z-index: 0;
+  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, #000 30%, transparent 80%);
+          mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, #000 30%, transparent 80%);
+}
+.hero-sparkles canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
 
 /* ============ HERO INTRO (reveal section) ============ */
 .hero-intro {
@@ -308,12 +331,7 @@ button { font-family: inherit; }
   align-items: center;
   gap: 10px;
 }
-.hero-intro-eyebrow::before,
-.hero-intro-eyebrow::after {
-  content: "";
-  width: 24px; height: 1px;
-  background: var(--accent);
-}
+
 .hero-intro-sub {
   font-size: clamp(18px, 1.8vw, 26px);
   line-height: 1.45;
@@ -324,6 +342,12 @@ button { font-family: inherit; }
 .scatter-text {
   perspective: 600px;
   text-wrap: balance;
+}
+/* keep each word atomic so the browser can't break inside it
+   (each .ch is an inline-block, which would otherwise be a wrap opportunity) */
+.scatter-text .word-group {
+  display: inline-block;
+  white-space: nowrap;
 }
 .scatter-text .ch {
   display: inline-block;
@@ -365,15 +389,75 @@ button { font-family: inherit; }
   border: 1px solid transparent;
   cursor: pointer;
 }
-.btn-primary {
-  background: var(--accent);
+.btn-primary,
+.btn-on-dark {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  padding: 16px 32px;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
   color: #fff;
-  box-shadow: 0 8px 24px -8px var(--accent-glow), inset 0 1px 0 rgba(255,255,255,0.12);
+  border-color: transparent;
+  gap: 0; /* spacing is owned by .btn-inner */
+  box-shadow: 0 4px 24px rgba(74, 29, 150, 0.35), inset 0 1px 0 rgba(255,255,255,0.12);
 }
-.btn-primary:hover {
-  background: var(--violet);
+.btn-primary:hover,
+.btn-on-dark:hover {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+  color: #fff;
   transform: translateY(-2px);
-  box-shadow: 0 16px 40px -8px var(--accent-glow);
+  /* layered glow: tight inner sheen, mid-range halo, soft outer bloom */
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.06),
+    inset 0 1px 0 rgba(255,255,255,0.22),
+    0 10px 28px rgba(74, 29, 150, 0.55),
+    0 0 48px rgba(109, 63, 224, 0.45);
+}
+
+/* Layered structure (injected by main.js) */
+.btn-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+  transition: filter 0.3s var(--ease-out), transform 0.4s var(--ease-out);
+}
+.btn-primary:hover .btn-bg,
+.btn-on-dark:hover .btn-bg {
+  filter: brightness(1.08);
+  transform: scale(1.02);
+}
+.btn-inner {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+  z-index: 1;
+}
+.btn-icon-wrap {
+  position: relative;
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+}
+
+/* 5-dot arrow — chevron pointing right (static) */
+.btn-arrow {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5px;
+}
+.btn-arrow .dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: currentColor;
+  transform: translateX(calc(var(--index, 0) * -3px));
 }
 .btn-ghost {
   background: rgba(255,255,255,0.6);
@@ -383,16 +467,6 @@ button { font-family: inherit; }
 }
 .btn-ghost:hover {
   border-color: var(--accent);
-  color: var(--accent);
-  transform: translateY(-2px);
-}
-.btn-on-dark {
-  background: #fff;
-  color: var(--accent-deep);
-  box-shadow: 0 12px 30px -8px rgba(0,0,0,0.4);
-}
-.btn-on-dark:hover {
-  background: var(--accent-soft);
   color: var(--accent);
   transform: translateY(-2px);
 }

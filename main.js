@@ -5,6 +5,160 @@
 
 (() => {
 
+  /* ---------- Primary CTA: layered button with arrow-dots hover cascade ----
+     Auto-wires every .btn-primary / .btn-on-dark anchor. Reads the existing
+     label, drops any inline arrow span, and rebuilds the child DOM as:
+       .btn-bg (gradient backdrop, absolute)
+       .btn-inner
+         .btn-label
+         .btn-icon-wrap → 4 stacked .btn-arrow (each = 5 dots in a > chevron)
+     CSS handles the staggered fly-through on hover. */
+  document.querySelectorAll('.btn-primary, .btn-on-dark').forEach(btn => {
+    if (btn.dataset.cta === 'wired') return;
+
+    // Pull label text out of whatever currently lives inside (text + optional
+    // arrow span). textContent is fine because these CTAs are plain text.
+    const label = btn.textContent.replace(/\s*[→➔➜]\s*$/u, '').trim();
+    btn.textContent = '';
+
+    const bg = document.createElement('span');
+    bg.className = 'btn-bg';
+    bg.setAttribute('aria-hidden', 'true');
+
+    const inner = document.createElement('span');
+    inner.className = 'btn-inner';
+
+    const lab = document.createElement('span');
+    lab.className = 'btn-label';
+    lab.textContent = label;
+
+    const iconWrap = document.createElement('span');
+    iconWrap.className = 'btn-icon-wrap';
+    iconWrap.setAttribute('aria-hidden', 'true');
+
+    // Single static chevron — 5 dots laid out vertically, --index controls
+    // horizontal shift forming a > with the middle dot (index 0) at the tip.
+    const arrow = document.createElement('span');
+    arrow.className = 'btn-arrow';
+    [2, 1, 0, 1, 2].forEach(idx => {
+      const dot = document.createElement('span');
+      dot.className = 'dot';
+      dot.style.setProperty('--index', String(idx));
+      arrow.appendChild(dot);
+    });
+    iconWrap.appendChild(arrow);
+
+    inner.appendChild(lab);
+    inner.appendChild(iconWrap);
+    btn.appendChild(bg);
+    btn.appendChild(inner);
+    btn.dataset.cta = 'wired';
+  });
+
+  /* ---------- Sparkle particles under "intelligence." in the hero ----------
+     Sparse ambient dust — tiny purple dots drifting slowly, opacity pulsing
+     between near-invisible and faint. Anchored to the word via an inline
+     wrapper; radial mask feathers the field at its edges so there's no hard
+     cutoff. Loop pauses when offscreen and respects reduced-motion. */
+  const heroEm = document.querySelector('.hero-title em');
+  if (heroEm && !heroEm.closest('.hero-em-wrap')) {
+    const wrap = document.createElement('span');
+    wrap.className = 'hero-em-wrap';
+    heroEm.parentNode.insertBefore(wrap, heroEm);
+    wrap.appendChild(heroEm);
+
+    const layer = document.createElement('span');
+    layer.className = 'hero-sparkles';
+    layer.setAttribute('aria-hidden', 'true');
+    const canvas = document.createElement('canvas');
+    layer.appendChild(canvas);
+    wrap.appendChild(layer);
+
+    const ctx = canvas.getContext('2d');
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const N = 50;                  // sparse — you can count them
+    const OP_MIN = 0.24;
+    const OP_MAX = 0.70;
+    const SPEED = 0.3;             // px/frame max drift
+    let particles = [];
+    let w = 0, h = 0;
+
+    const seed = () => {
+      particles = [];
+      for (let i = 0; i < N; i++) {
+        particles.push({
+          x: Math.random() * w,
+          y: Math.random() * h,
+          vx: (Math.random() - 0.5) * SPEED,
+          vy: (Math.random() - 0.5) * SPEED,
+          r:  0.4 + Math.random() * 0.8,           // 0.4 → 1.2 px
+          phase: Math.random() * Math.PI * 2,
+          phaseSpeed: 0.008 + Math.random() * 0.018,
+        });
+      }
+    };
+
+    const resize = () => {
+      const rect = canvas.getBoundingClientRect();
+      w = rect.width; h = rect.height;
+      if (!w || !h) return;
+      canvas.width = Math.round(w * dpr);
+      canvas.height = Math.round(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      seed();
+    };
+
+    const drawFrame = () => {
+      ctx.clearRect(0, 0, w, h);
+      const amp = (OP_MAX - OP_MIN) * 0.5;
+      const mid = OP_MIN + amp;
+      for (const p of particles) {
+        p.x += p.vx; p.y += p.vy;
+        if (p.x < 0) p.x += w; else if (p.x > w) p.x -= w;
+        if (p.y < 0) p.y += h; else if (p.y > h) p.y -= h;
+        p.phase += p.phaseSpeed;
+        const op = mid + amp * Math.sin(p.phase);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(74, 29, 150, ${op.toFixed(3)})`;
+        ctx.fill();
+      }
+    };
+
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let running = false;
+    let raf = null;
+    const tick = () => {
+      if (!running) return;
+      drawFrame();
+      raf = requestAnimationFrame(tick);
+    };
+
+    resize();
+    window.addEventListener('resize', resize);
+    // Re-seed when the em's box changes (font load, viewport rescale, etc.)
+    if (typeof ResizeObserver !== 'undefined') {
+      new ResizeObserver(resize).observe(wrap);
+    }
+
+    if (reduced) {
+      // single static frame, no animation
+      drawFrame();
+    } else {
+      const io = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            if (!running) { running = true; tick(); }
+          } else {
+            running = false;
+            if (raf) { cancelAnimationFrame(raf); raf = null; }
+          }
+        });
+      });
+      io.observe(wrap);
+    }
+  }
+
   /* ---------- NAV scroll state ---------- */
   const nav = document.getElementById('nav');
   const onScroll = () => {
@@ -87,38 +241,55 @@
      mapped to [0, 0.5] of element scroll progress.            */
   document.querySelectorAll('.scatter-text').forEach(node => {
     const text = node.textContent.trim().replace(/\s+/g, ' ');
-    const chars = [...text];
-    const center = (chars.length - 1) / 2;
+    const totalLen = text.length;
+    const center = (totalLen - 1) / 2;
     node.textContent = '';
-    const spans = chars.map((c, i) => {
-      const span = document.createElement('span');
-      span.className = 'ch';
-      // Spaces render as double nbsp to keep word gaps + remain animatable
-      span.innerHTML = (c === ' ') ? '\u00A0\u00A0' : c;
-      const distance = (i - center) / center; // -1 .. 1
-      span.dataset.distance = distance.toFixed(4);
-      // initial scattered position
-      span.style.setProperty('--tx', (distance * 60) + 'px');
-      span.style.setProperty('--rx', (distance * 40) + 'deg');
-      span.style.setProperty('--op', '0.15');
-      node.appendChild(span);
-      return span;
+
+    // Wrap each WORD in an inline-block with white-space: nowrap so the
+    // browser can't break inside it, but CAN break at the real spaces
+    // between word-groups. The per-char .ch spans still drive animation.
+    const spans = [];
+    const words = text.split(' ');
+    let i = 0;
+    words.forEach((word, wi) => {
+      const group = document.createElement('span');
+      group.className = 'word-group';
+      for (const c of word) {
+        const span = document.createElement('span');
+        span.className = 'ch';
+        span.textContent = c;
+        const distance = (i - center) / center; // -1 .. 1
+        span.dataset.distance = distance.toFixed(4);
+        span.style.setProperty('--tx', (distance * 60) + 'px');
+        span.style.setProperty('--rx', (distance * 40) + 'deg');
+        span.style.setProperty('--op', '0.15');
+        group.appendChild(span);
+        spans.push(span);
+        i++;
+      }
+      node.appendChild(group);
+      // Real space between word-groups \u2014 this is where the browser wraps.
+      if (wi < words.length - 1) {
+        node.appendChild(document.createTextNode(' '));
+        i++; // keep index in lockstep with original text positions
+      }
     });
 
     const update = () => {
       const rect = node.getBoundingClientRect();
       const vh = window.innerHeight || document.documentElement.clientHeight || 0;
-      // start: element top hits 85% of viewport (rect.top = vh*0.85)
-      // end:   element center hits viewport center (rect.top + rect.height/2 = vh/2)
-      const startTop = vh * 0.85;
-      const endTop   = (vh / 2) - (rect.height / 2);
+      // Widened window so the reveal takes more scroll distance:
+      // start when element top is at 90% of viewport,
+      // end   when element top is at 20% of viewport (well past center).
+      const startTop = vh * 0.9;
+      const endTop   = vh * 0.2;
       const denom    = startTop - endTop;
-      // Guard against degenerate states (pre-layout, zero-height viewport, etc.)
       if (!vh || denom <= 0 || !isFinite(denom)) return;
       const raw = (startTop - rect.top) / denom;
       const progress = Math.max(0, Math.min(1, raw));
-      // The spec maps [0, 0.5] of element scroll progress to the full animation
-      const t = Math.max(0, Math.min(1, progress / 0.5));
+      // Use the full [0,1] range (no /0.5 cap) \u2014 animation now fills the
+      // whole window instead of completing in the first half.
+      const t = progress;
       const eased = 1 - Math.pow(1 - t, 3);
       spans.forEach(span => {
         const d = parseFloat(span.dataset.distance);
@@ -177,9 +348,12 @@
 
     const n = wordSpans.length;
     if (!n) return;
-    // Each word owns a slice of total progress; slice width > stride for overlap
-    const stride = 1 / n;
-    const sliceWidth = stride * 2.5;
+    // Distribute slot STARTS across [0, 1 - sliceWidth] so the last word's
+    // slot ends at exactly progress = 1. The previous scheme (stride = 1/n,
+    // sliceWidth = 2.5/n) ran the last slot off the end of progress, so the
+    // final word never fully revealed no matter how far the user scrolled.
+    const sliceWidth = 0.35;
+    const startStep = n > 1 ? (1 - sliceWidth) / (n - 1) : 0;
     const MIN_OP = 0.12;
 
     const update = () => {
@@ -196,7 +370,7 @@
       const progress = Math.max(0, Math.min(1, raw));
 
       for (let i = 0; i < n; i++) {
-        const wStart = i * stride;
+        const wStart = i * startStep;
         const t = Math.max(0, Math.min(1, (progress - wStart) / sliceWidth));
         const op = MIN_OP + (1 - MIN_OP) * t;
         wordSpans[i].style.setProperty('--op', op.toFixed(3));
