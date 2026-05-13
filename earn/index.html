@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Earn with Northstar — Get Paid to Do Everyday Tasks</title>
+  <meta name="description" content="Cook, clean, organize. Record yourself doing everyday tasks and earn money same-day. Your videos help train the next generation of AI." />
+  <link rel="icon" type="image/png" href="../assets/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles.css" />
+
+  <!-- Earn page — dark theme, scoped to this file -->
+  <style>
+    body {
+      background: #0E0B33;
+      color: #ECE9F7;
+    }
+
+    /* nav */
+    .earn-nav {
+      position: fixed;
+      inset: 0 0 auto 0;
+      z-index: 100;
+      padding: 18px 0;
+      background: rgba(14, 11, 51, 0.6);
+      backdrop-filter: saturate(160%) blur(14px);
+      -webkit-backdrop-filter: saturate(160%) blur(14px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .earn-nav-inner {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 0 clamp(20px, 4vw, 56px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+    .earn-nav .nav-logo-text { color: #fff; }
+    .earn-nav-back {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(236, 233, 247, 0.7);
+      transition: color 0.2s var(--ease-out);
+    }
+    .earn-nav-back:hover { color: #fff; }
+
+    /* hero */
+    .earn-hero {
+      min-height: 100vh;
+      padding: clamp(120px, 16vw, 180px) clamp(20px, 4vw, 56px) clamp(32px, 4vw, 60px);
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(55% 70% at 30% 30%, rgba(109, 63, 224, 0.32), transparent 60%),
+        radial-gradient(50% 60% at 80% 70%, rgba(74, 29, 150, 0.25), transparent 70%),
+        linear-gradient(180deg, #0E0B33 0%, #1A1A4E 100%);
+    }
+    .earn-hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+      background-size: 56px 56px;
+      mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
+      -webkit-mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
+      pointer-events: none;
+    }
+    .earn-hero-inner {
+      position: relative;
+      z-index: 1;
+      max-width: 1320px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: clamp(40px, 6vw, 88px);
+      align-items: center;
+    }
+
+    /* copy column */
+    .earn-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #C9B6FF;
+      margin: 0 0 28px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .earn-eyebrow::before,
+    .earn-eyebrow::after {
+      content: "";
+      width: 24px; height: 1px;
+      background: rgba(201, 182, 255, 0.6);
+    }
+    .earn-title {
+      font-family: var(--font-display);
+      font-size: clamp(40px, 6.2vw, 84px);
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: #fff;
+      margin: 0 0 28px;
+      text-wrap: balance;
+    }
+    .earn-pitch {
+      font-size: clamp(16px, 1.3vw, 19px);
+      line-height: 1.55;
+      color: rgba(236, 233, 247, 0.82);
+      max-width: 540px;
+      margin: 0 0 32px;
+    }
+    .earn-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 0 0 40px;
+    }
+    .earn-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 16px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      font-size: 13.5px;
+      color: rgba(236, 233, 247, 0.92);
+    }
+    .earn-pill-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #9F7BFF;
+      box-shadow: 0 0 8px rgba(159, 123, 255, 0.7);
+    }
+    .earn-cta-row {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+    .earn-cta-note {
+      font-size: 13.5px;
+      color: rgba(236, 233, 247, 0.58);
+    }
+
+    /* phone mockup column */
+    .earn-phone-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .earn-phone-link {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.35s var(--ease-out), filter 0.35s var(--ease-out);
+    }
+    .earn-phone-link:hover { transform: translateY(-4px); filter: brightness(1.06); }
+    .earn-phone-link:focus-visible {
+      outline: 2px solid #C9B6FF;
+      outline-offset: 18px;
+      border-radius: 44px;
+    }
+    .earn-phone {
+      position: relative;
+      width: 100%;
+      max-width: 300px;
+      aspect-ratio: 9 / 19.5;
+      border-radius: 38px;
+      background: linear-gradient(135deg, #2A2547 0%, #0E0B33 100%);
+      box-shadow:
+        0 30px 64px rgba(0, 0, 0, 0.55),
+        0 0 0 1px rgba(255, 255, 255, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      padding: 10px;
+      transform: rotate(-2deg);
+    }
+    .earn-phone-notch {
+      position: absolute;
+      top: 14px; left: 50%;
+      transform: translateX(-50%);
+      width: 92px; height: 24px;
+      background: #000;
+      border-radius: 14px;
+      z-index: 2;
+    }
+    .earn-phone-screen {
+      position: relative;
+      width: 100%; height: 100%;
+      border-radius: 30px;
+      overflow: hidden;
+      background: #000;
+    }
+    .earn-phone-video {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      border-radius: inherit;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+    .earn-phone-video[data-loaded="true"] { opacity: 1; }
+    .earn-phone-ig-tag {
+      position: absolute;
+      top: 18px; left: 18px;
+      z-index: 3;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.42);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #fff;
+    }
+    .earn-phone-ig-tag svg { display: block; }
+    .earn-phone-handle {
+      position: absolute;
+      bottom: 26px; left: 20px;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.95);
+      z-index: 3;
+      text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+    }
+    .earn-phone-caption {
+      position: absolute;
+      bottom: 8px; left: 20px; right: 60px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.85);
+      z-index: 3;
+      text-shadow: 0 1px 6px rgba(0, 0, 0, 0.7);
+    }
+    .earn-phone-actions {
+      position: absolute;
+      right: 14px;
+      bottom: 18px;
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+    .earn-phone-action {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+    }
+    .earn-phone-action svg { display: block; }
+    .earn-phone-glow {
+      position: absolute;
+      inset: -40px;
+      background: radial-gradient(closest-side, rgba(109, 63, 224, 0.35), transparent 70%);
+      filter: blur(20px);
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    /* secondary band */
+    .earn-band {
+      padding: clamp(28px, 3.5vw, 48px) clamp(20px, 4vw, 56px) clamp(60px, 8vw, 100px);
+      background: linear-gradient(180deg, #1A1A4E 0%, #0E0B33 100%);
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .earn-band-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: clamp(24px, 4vw, 56px);
+    }
+    .earn-step-num {
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      letter-spacing: 0.18em;
+      color: #9F7BFF;
+      margin: 0 0 12px;
+    }
+    .earn-step-title {
+      font-family: var(--font-display);
+      font-size: clamp(18px, 1.6vw, 22px);
+      font-weight: 700;
+      color: #fff;
+      margin: 0 0 10px;
+      letter-spacing: -0.01em;
+    }
+    .earn-step-body {
+      font-size: 14.5px;
+      color: rgba(236, 233, 247, 0.7);
+      line-height: 1.55;
+      margin: 0;
+    }
+
+    /* footer */
+    .earn-footer {
+      padding: 48px clamp(20px, 4vw, 56px);
+      background: #08061f;
+      color: rgba(236, 233, 247, 0.6);
+      font-size: 13px;
+    }
+    .earn-footer-inner {
+      max-width: 1320px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .earn-footer a {
+      color: rgba(236, 233, 247, 0.85);
+      border-bottom: 1px solid transparent;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .earn-footer a:hover {
+      color: #fff;
+      border-bottom-color: rgba(255, 255, 255, 0.4);
+    }
+
+    @media (max-width: 880px) {
+      .earn-hero-inner { grid-template-columns: 1fr; gap: 56px; }
+      .earn-phone { max-width: 260px; transform: none; }
+      .earn-band-inner { grid-template-columns: 1fr; gap: 32px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="earn-nav" aria-label="Primary">
+    <div class="earn-nav-inner">
+      <a href="../index.html" class="nav-logo" aria-label="Northstar — home">
+        <img src="../assets/logo.png" alt="" class="nav-logo-img" />
+        <span class="nav-logo-text">Northstar</span>
+      </a>
+      <a href="../index.html" class="earn-nav-back">← Back to Northstar</a>
+    </div>
+  </nav>
+
+  <header class="earn-hero">
+    <div class="earn-hero-grid" aria-hidden="true"></div>
+
+    <div class="earn-hero-inner">
+      <div class="earn-hero-copy">
+        <p class="earn-eyebrow">Northstar Contributor Program</p>
+        <h1 class="earn-title">Get Paid to Do<br/>Everyday Tasks</h1>
+        <p class="earn-pitch">
+          Cook, clean, organize. Record yourself doing simple tasks and earn money same-day. Your videos help train the next generation of AI — the systems that will one day work alongside us.
+        </p>
+        <div class="earn-pills">
+          <span class="earn-pill"><span class="earn-pill-dot"></span>Same-day pay</span>
+          <span class="earn-pill"><span class="earn-pill-dot"></span>Use your phone</span>
+          <span class="earn-pill"><span class="earn-pill-dot"></span>Work from home</span>
+        </div>
+        <div class="earn-cta-row">
+          <a href="mailto:contributors@northstarrobotics.ai" class="btn btn-on-dark btn-lg">Apply to Join</a>
+          <span class="earn-cta-note">Takes less than 60 seconds</span>
+        </div>
+      </div>
+
+      <div class="earn-phone-wrap">
+        <a class="earn-phone-link"
+           href="https://www.instagram.com/northstarrobotics.ai/"
+           target="_blank"
+           rel="noopener noreferrer"
+           aria-label="Watch Northstar on Instagram (@northstarrobotics.ai)">
+        <div class="earn-phone">
+          <div class="earn-phone-glow"></div>
+          <div class="earn-phone-notch"></div>
+          <div class="earn-phone-screen">
+            <video class="earn-phone-video" autoplay muted loop playsinline poster="" data-src="../assets/promo.mp4"></video>
+            <span class="earn-phone-ig-tag">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round">
+                <rect x="2.5" y="2.5" width="19" height="19" rx="5.5"/>
+                <circle cx="12" cy="12" r="4.5"/>
+                <circle cx="17.5" cy="6.5" r="0.4" fill="currentColor"/>
+              </svg>
+              Reel
+            </span>
+            <span class="earn-phone-handle">@northstarrobotics.ai</span>
+            <span class="earn-phone-caption">Cook · clean · earn. Same-day pay.</span>
+            <div class="earn-phone-actions">
+              <span class="earn-phone-action" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                </svg>
+              </span>
+              <span class="earn-phone-action" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+                  <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+                </svg>
+              </span>
+              <span class="earn-phone-action" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+                  <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+                  <polyline points="16 6 12 2 8 6"/>
+                  <line x1="12" y1="2" x2="12" y2="15"/>
+                </svg>
+              </span>
+            </div>
+          </div>
+        </div>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <section class="earn-band">
+    <div class="earn-band-inner">
+      <div>
+        <p class="earn-step-num">01</p>
+        <h3 class="earn-step-title">Apply in under a minute</h3>
+        <p class="earn-step-body">Send a quick form. We'll review and onboard you within 48 hours.</p>
+      </div>
+      <div>
+        <p class="earn-step-num">02</p>
+        <h3 class="earn-step-title">Record your routine</h3>
+        <p class="earn-step-body">Pick a task list, prop your phone, and capture short clips of your real day-to-day. We tell you exactly what to film.</p>
+      </div>
+      <div>
+        <p class="earn-step-num">03</p>
+        <h3 class="earn-step-title">Get paid the same day</h3>
+        <p class="earn-step-body">Upload, we review, you're paid. Most contributors clear their first payout within 24 hours of approval.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="earn-footer">
+    <div class="earn-footer-inner">
+      <span>© 2026 Northstar Robotics. All rights reserved.</span>
+      <a href="../index.html">Northstar.ai →</a>
+    </div>
+  </footer>
+
+  <script src="../main.js"></script>
+</body>
+</html>
